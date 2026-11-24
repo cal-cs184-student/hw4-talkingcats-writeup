@@ -98,7 +98,15 @@ The final third with all constraints enabled shows both the horizontal grid and 
 		</div>
 
 		<h2>Part 2: Simulation via numerical integration</h2>
-		
+
+		<p style="white-space: pre-line;">
+
+Ks represents spring stiffness and sets how hard a spring pulls back for a certain amount of stretch.
+
+With a low ks, the cloth stretches a lot and sags and tends to move slowly. It looks like it "feels heavy" when it moves. 
+
+In high ks, it is stiff and bounces quickly. It is less stretchy, so hangs at a higher rest. It also reacts and bounces quicker. 
+
 		<div style="display: flex; flex-direction: column; align-items: center;">
 			<table style="width: 100%; text-align: center; border-collapse: collapse;">
 			  <tr>
@@ -118,6 +126,20 @@ The final third with all constraints enabled shows both the horizontal grid and 
 			</table>
 		</div>
 
+		</p>
+
+	<p style="white-space: pre-line;">
+
+What about for density?
+
+With a low density setting the cloth falls slower and stretches less because if it is less “dense” it is less “heavy”. Intuitively i think of it as a cloth made of lighter weight materials being pinned on two corners and letting fall as compared to a “regular weight material” cloth. With a high ks spring action however it will fall less stably.
+
+With a high density setting the opposite occurs, the cloth falls quicker and you can see that the cloth has more folds and is more “pulled down” since it is overall “heavier”. Not reflected in a screenshot but when combined with low ks, its sagginess is increased. 
+
+One could say density is how much load the springs carry and ks is how well or effectively they carry it. Low density and high ks is the springiest, with high density low ks, the least springy. 
+
+</p>
+
 				<div style="display: flex; flex-direction: column; align-items: center;">
 			<table style="width: 100%; text-align: center; border-collapse: collapse;">
 			  <tr>
@@ -132,6 +154,17 @@ The final third with all constraints enabled shows both the horizontal grid and 
 			  </tr>
 			</table>
 		</div>
+
+
+	<p style="white-space: pre-line;">
+
+
+What about for damping?
+
+Low damping allows the cloth to “flutter” more easily, and in the case of the screenshot, it never stops fluttering. In fact it flutters to the other side and just continues to do so. Energy is kept much longer and so “oscillation” continue to go on longer as well. If ks is high, the effects are compounded. 
+
+In high damping, the energy in the cloth is suppressed much quicker. Intuitively I think about it as energy loss and dissipation even though that is not what is happening mathematically. 
+</p>
 
 		<div style="display: flex; flex-direction: column; align-items: center;">
 			<table style="width: 100%; text-align: center; border-collapse: collapse;">
@@ -153,7 +186,24 @@ The final third with all constraints enabled shows both the horizontal grid and 
 			<figcaption>Final resting state of cloth from pinned 4</figcaption>
 	</figure>
 
+
+
 		<h2>Part 3: Handling collisions with other objects</h2>
+
+	<p style="white-space: pre-line;">
+
+Describe your implementation of handling collisions with spheres and planes.
+
+Sphere: if a mass is inside or on the sphere, I take the direction from the sphere’s center to the mass and extend it to the surface. That point is the tangent point. The correction vector goes from last_position to the tangent point, and the new position is last_position + correction * (1 - friction).
+
+Plane: I compute which side of the plane the mass was on at last_position and at position. If the signs differ, it crossed. I take the tangent point as the current position projected onto the plane, shift it by SURFACE_OFFSET toward the side the mass came from, and set the new position to last_position + correction * (1 - friction).
+In simulate, every point mass is tested against every collision object after the Verlet step.
+
+For low ks, the cloth clings and stretches over the sphere in a more "floppy" way. 
+
+With a high ks, the cloth holds it shape better and the folds are broader. 
+
+</p>
 
 				<div style="display: flex; flex-direction: column; align-items: center;">
 			<table style="width: 100%; text-align: center; border-collapse: collapse;">
@@ -181,6 +231,16 @@ The final third with all constraints enabled shows both the horizontal grid and 
 		
 
 		<h2>Part 4: Handling self-collisions</h2>
+
+	<p style="white-space: pre-line;">
+
+	Each step, build_spatial_map hashes every point mass into a 3D box and stores it in the map. The boxes have size w = 3*width/num_width_points, h = 3*height/num_height_points and t = max(w, h). hash_position turns a position into integer box coordinates using floor, then packs the three coordinates into one float. In self_collide, each mass looks up the masses in its own box. For each one closer than 2 * thickness (skipping itself), it computes a push directly away that restores the 2 * thickness separation. The average of those pushes, divided by simulation_steps, is added to the mass’s position.
+	
+	Higher density gives heavier cloth that falls harder and compresses into tighter folds.
+
+	Low ks gives softer, wider folds and high ks gives sharper and stiffer folds.
+	
+	</p>
 
 		<div style="display: flex; flex-direction: column; align-items: center;">
 			<table style="width: 100%; text-align: center; border-collapse: collapse;">
@@ -215,11 +275,11 @@ The final third with all constraints enabled shows both the horizontal grid and 
 			  </tr>
 			<tr>
 				<td style="text-align: center;">
-				  <img src="assets/part4/lowdensity.png" width="400px"/>
+				  <img src="assets/part4/lowkscollide.png" width="400px"/>
 				  <figcaption>low ks </figcaption>
 				</td>
 				<td style="text-align: center;">
-				  <img src="assets/part4/highdensity.png" width="400px"/>
+				  <img src="assets/part4/highkscollide.png" width="400px"/>
 				  <figcaption>high ks</figcaption>
 				</td>
 			  </tr>
@@ -227,6 +287,16 @@ The final third with all constraints enabled shows both the horizontal grid and 
 		</div>
 		
 		<h2>Part 5: Shaders</h2>
+
+
+			<p style="white-space: pre-line;">
+
+What a shader program is. A shader program is a small program that runs on the GPU as one stage of the graphics pipeline, with many copies running in parallel. The vertex shader runs once per vertex. It transforms the position and normal to world space, writes the screen position to gl_Position, and passes values like position, normal and UV along. The GPU rasterizes the triangles and interpolates those values across each one. The fragment shader then runs once per pixel-sized fragment, uses the interpolated values and uniforms like the light and camera position, and computes the final color. Together, the vertex shader supplies the geometry and the fragment shader decides how it looks.
+
+Blinn-Phong. The color is the sum of three terms. Ambient (ka * Ia) is a constant that keeps shadowed areas from going black. Diffuse (kd * (I/r²) * max(0, n·l)) is matte shading that is brightest when the surface faces the light and falls off with distance. Specular (ks * (I/r²) * max(0, n·h)^p) is the shiny highlight, where h is the half vector between the light and view directions, and a larger p makes the highlight tighter. 
+
+
+			</p>
 
 		<div style="display: flex; flex-direction: column; align-items: center;">
 			<table style="width: 100%; text-align: center; border-collapse: collapse;">
@@ -253,7 +323,12 @@ The final third with all constraints enabled shows both the horizontal grid and 
 			</table>
 		</div>
 
-		<p> filler stuff </p>
+		<p style="white-space: pre-line;">
+			
+		Bump mapping changes only the shading normal. It samples the height map at neighboring UVs, measures how fast the height changes, builds a perturbed normal and rotates it into world space with the TBN matrix. The geometry doesn’t change, so the sphere’s silhouette stays perfectly round. Displacement mapping moves the actual vertices along their normals by the sampled height, and also uses the perturbed normal for lighting. The bumps are real geometry, so the silhouette changes.
+		
+		The bump texture by the way is the silhouette of some cats, if you look closely. 
+		</p>
 
 		<div style="display: flex; flex-direction: column; align-items: center;">
 			<table style="width: 100%; text-align: center; border-collapse: collapse;">
@@ -293,8 +368,16 @@ The final third with all constraints enabled shows both the horizontal grid and 
 			</table>
 		</div>
 
-		<p>more filler stuff</p>
+		<p style="white-space: pre-line;">
 		
+		The bump mapping doesn't really look much different between 16 and 128, but the displacement being coarser at 16 and the detail being smoother at 128 makes sense.
+
+		The problem is i picked a texture of a bunch of overlapping cat silhouettes so although i can see that in the 128 they are smoother are more... vaguely cat like and less bumpy, it is not going to be immediately obvious. They also no longer really keep their cat shape consistently in sphere mode so you have to look pretty closely at the bump shader cloth picture. 
+
+		In retrospect I should have just used the one of the built in bricks like texture 3 or 4 I think the differences would have been more noticeable. 
+
+		</p>
+
 		<div style="display: flex; flex-direction: column; align-items: center;">
 			<table style="width: 100%; text-align: center; border-collapse: collapse;">
 			  <tr>
