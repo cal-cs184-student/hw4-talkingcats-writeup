@@ -53,7 +53,30 @@
 
 		<h2>Overview</h2>
 
+		<p style="white-space: pre-line;">
+High level overview is that this is a component for a basic physics simulator, utilizing mass and spring logic to simulate negotiation of forces like gravity and events like collision between objects. It also has a graphical rendering pipeline built on top of it, which is a culmination of all the work we did in the previous homeworks.
+ 
+Prior to this my only experience with collisions in graphics was in Unity, usually to prevent clipping or to activate a flag when it did occur. How the rigid body was affected by physics or how it was mathematically coded up I did not have a very in-depth understanding. I would edit higher level abstracted functions for premade objects to increase or decrease the types of physics responses, but rarely get into the code level of point masses and springs. I could see them in wireframe mode and edit mass values to affect “weight” behavior in different gravity environments, but just sort of estimated a “good enough” general understanding and trusted whoever was implementing the initial math. 
+
+The most eye opening part of this assignment was the implementing self collision for the cloth. I remember a lot of difficulty one time trying to get capes to look like they were flowing “correctly enough” based on what direction a strong or soft wind was coming from. There were options not in the default configurations that I know more about now and can get a more advanced package for now. 
+
+I had a lot of experience with texture and shading different objects in unity because of the material creation customizer in the engine. Spent a lot of time trying to get the right look for a substance under different environmental lighting conditions. 
+
+I wonder what libraries there are for extending the applications / functions and number of objects for simulation at this level of complexity and configuration. I am going to do some more research. 
+
+		</p>
+
 		<h2>Part 1: Masses and springs</h2>
+
+<p style="white-space: pre-line;">
+		These are the photos of the cloth wireframe with different constraints enabled.
+
+In the first photo without any shearing constraints, you can see that there is only a horizontal / vertical grid present. The bending springs lie on top of the structural lines, so they add no visible lines.
+
+In the second photo you can see that with only shearing springs on, the horizontal / vertical grid is absent and there is only the diagonal intersecting grid.
+
+The final third with all constraints enabled shows both the horizontal grid and diagonal intersections. All 3 sets of springs are now active.
+</p>
 
 		<div style="display: flex; flex-direction: column; align-items: center;">
 			<table style="width: 100%; text-align: center; border-collapse: collapse;">
@@ -298,12 +321,11 @@
 			</table>
 		</div>
 
-		<p>can write here as well</p>
-
 <h2>AI Disclosure</h2>
 
-<p>
-Well, much less use than for the previous homework. 
+<p style="white-space: pre-line;">
+
+	Well I used it much less for this homework than the previous one.  The foundation of the work is mine but I did use claude free tier for polish. Also there were several clarification questions. Among the uses were cleaning up the language in my written explanations, and debugging some syntax regarding the format of the shader type files. There was some translating math to c++ syntax debugging as well regarding part 4, and whether the similarities in output (at least graphically) for certain parts of part 4 and 5 seemed to be correct. Specifically differences in what I should be looking for in “displacement” type photos. (AI was not as able to really answer these very well. Though now I realized I did not upload the photos to the model directly and ask it if it looked correct. I may try this later just to see its capabilities to “notice” things).
 
 </p>
 
